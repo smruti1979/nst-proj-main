@@ -9,6 +9,7 @@ from wtforms.validators import InputRequired
 from PIL import Image
 from torchvision import transforms
 import io
+import gc
 
 # Import your existing AdaIN code
 from utils.models import VGGEncoder, Decoder
@@ -59,12 +60,12 @@ def allowed_file(filename):
 
 def style_transfer(content_image, style_image, encoder, decoder, alpha, device):
     content_transform = transforms.Compose([
-        transforms.Resize(512),
+        transforms.Resize(256),
         transforms.ToTensor()
     ])
 
     style_transform = transforms.Compose([
-        transforms.Resize(512),
+        transforms.Resize(256),
         transforms.ToTensor()
     ])
     content_image = content_transform(content_image).unsqueeze(0).to(device)
@@ -79,6 +80,16 @@ def style_transfer(content_image, style_image, encoder, decoder, alpha, device):
         stylized_feats = alpha * stylized_feats + (1 - alpha) * content_feats
 
         stylized_image = decoder(stylized_feats)
+
+
+         # 3. Clean up variables to free memory pointers
+        del content_image
+        del style_image
+        
+        # 4. Force immediate garbage collection
+        gc.collect()
+        if device == 'cuda':
+            torch.cuda.empty_cache()
 
     return stylized_image
 
