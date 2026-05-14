@@ -38,8 +38,16 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 encoder = VGGEncoder('vgg_normalised.pth').to(device)
 decoder = Decoder().to(device)
+
+# Get the path of the directory where app.py lives
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Build the dynamic path to your model file
+decoder_path = os.path.join(BASE_DIR, 'experiment', 'final_exp', 'decoder_final.pth')
+
 #decoder.load_state_dict(torch.load('C:/Learning/AI_Projects/nst-project-main/NST_Code/experiment/final_exp/decoder_final.pth'))
-decoder.load_state_dict(torch.load('C:/Learning/AI_Projects/nst-project-main/NST_Code/experiment/final_exp/decoder_final.pth', map_location='cpu'))
+#decoder.load_state_dict(torch.load('C:/Learning/AI_Projects/nst-project-main/NST_Code/experiment/final_exp/decoder_final.pth', map_location='cpu'))
+decoder.load_state_dict(torch.load(decoder_path, map_location='cpu'))
 #decoder.load_state_dict(torch.load('C:/Learning/AI_Projects/nst-project-main/NST_Code/experiment/train/decoder_10.pth', map_location='cpu'))
 
 encoder.eval()
